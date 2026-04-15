@@ -9,8 +9,8 @@ services:
       HERMES_HOME: /opt/data
 
       # Remap to your Mac user UID so volume files are owned by you
+      # Note: GID 20 (staff on macOS) conflicts with GID 20 (dialout) in Debian — skip GID remap
       HERMES_UID: "501"
-      HERMES_GID: "20"
 
       # Keep Ollama model warm — avoids cold-load latency on every cron run
       OLLAMA_KEEP_ALIVE: "24h"
@@ -34,7 +34,7 @@ services:
 
     # Keep container alive for CLI interaction and cron scheduler
     # The gateway subcommand starts the cron scheduler + optional messaging gateways
-    command: ["gateway", "start"]
+    command: ["gateway", "run"]
 
 networks:
   hermes_net:

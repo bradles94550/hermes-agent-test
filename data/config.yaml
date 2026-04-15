@@ -7,14 +7,18 @@
 model:
   default: "gemma4:e4b"
 
-  # "ollama" is an alias for "custom" (OpenAI-compatible local endpoint)
-  provider: "ollama"
+  # Use "custom" (not "ollama") — the alias "ollama" is only for CLI selection,
+  # the stored config value must be "custom" for the provider resolver to use base_url
+  provider: "custom"
   base_url: "http://host.docker.internal:11434/v1"
 
-  # Context window for gemma4 4-bit — conservative; auto-detect often works
-  context_length: 8192
+  # Override Hermes's 64K minimum context check. Gemma4:e4b defaults to 8K
+  # in Ollama but supports higher num_ctx if set. For our short log-monitoring
+  # tasks, real conversations stay well under 8K. This override bypasses
+  # the minimum check — responses will be truncated at Ollama's actual limit.
+  context_length: 131072
 
-  # Don't blow the context budget on single responses
+  # Cap output tokens for cost/latency control
   max_tokens: 2048
 
 # =============================================================================
