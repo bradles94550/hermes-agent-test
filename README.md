@@ -73,16 +73,26 @@ find data/cron/output -name "*.md" | sort -r | head -20
 
 ## Ad-hoc Tasks
 
+All `docker exec` commands must use `--user hermes` — the container drops to the
+hermes user via gosu, but new exec sessions start as root and won't find configs.
+
 ```bash
-# Run an immediate log check
-docker exec -it hermes hermes chat
-# Then type: "Check Loki for errors in the last 1 hour and give me a summary"
+# Interactive chat session
+docker exec -it --user hermes hermes /bin/bash -c "
+  source /opt/hermes/.venv/bin/activate
+  hermes chat
+"
 
-# Or pass a one-shot prompt
-docker exec -it hermes hermes run "Query Loki for the last hour of container errors"
+# One-shot prompt
+docker exec -it --user hermes hermes /bin/bash -c "
+  source /opt/hermes/.venv/bin/activate
+  hermes chat -q 'Check Loki for container errors in the last 1 hour'
+"
 
-# Run a cron job immediately (by job ID)
-docker exec -it hermes hermes cron run container-error-monitor
+# List cron jobs
+docker exec --user hermes hermes /bin/bash -c "
+  source /opt/hermes/.venv/bin/activate && hermes cron list
+"
 ```
 
 ## Comparison Framework

@@ -1,28 +1,75 @@
 {
   "jobs": [
     {
-      "id": "container-error-monitor",
+      "id": "9e3883104c4b",
       "name": "Container Error Monitor",
-      "schedule": "every 4h",
-      "prompt": "You are a homelab sysadmin assistant. Use the loki-monitor skill to query Loki at http://host.docker.internal:3100 for container errors in the last 4 hours. Query LogQL: {job=\"docker\"} |= \"error\" != \"loki\" != \"promtail\" != \"n8n\" with limit 200. Also check for FATAL and panic patterns. Analyze the results and produce a structured report following the loki-monitor SKILL.md output format. Save the report to /opt/data/cron/output/container-error-monitor/ with the current timestamp as filename. If no issues found, say 'All clear — no container errors in last 4h.'",
-      "model": "gemma4:e4b",
-      "next_run": null,
+      "prompt": "You are a homelab sysadmin assistant. Use the loki-monitor skill to query Loki at http://host.docker.internal:3100 for container errors in the last 4 hours. Query using curl: curl -s \"http://host.docker.internal:3100/loki/api/v1/query_range\" with LogQL query {job=\"docker\"} filtered for error and excluding loki, promtail, n8n. Also check for fatal and panic. Analyze results and produce a structured report: overall health, issues table (severity/container/pattern/count/time), noise/expected section, and 0-1 recommendations. Save report to /opt/data/cron/output/container-error-monitor/ named YYYY-MM-DDTHH-MM-SS.md. If no issues: say All clear.",
+      "skills": [
+        "loki-monitor"
+      ],
+      "skill": "loki-monitor",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 240,
+        "display": "every 240m"
+      },
+      "schedule_display": "every 240m",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
       "enabled": true,
-      "delivery": {
-        "mode": "log"
-      }
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-15T00:23:47.359777+00:00",
+      "next_run_at": "2026-04-15T04:23:47.359793+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null
     },
     {
-      "id": "device-error-monitor",
-      "name": "Device Error Monitor (Tasmota/MQTT)",
-      "schedule": "every 4h",
-      "prompt": "You are a homelab sysadmin assistant. Use the loki-monitor skill to query Loki at http://host.docker.internal:3100 for Tasmota device anomalies in the last 4 hours. Run these queries: 1) {container=\"mqtt-logger-deepthought\"} |= \"Offline\" for device drops, 2) {container=\"mqtt-logger-deepthought\"} |= \"error\" for MQTT errors. Known noise: barfan and barfanlight have elevated MqttCount due to WiFi instability — mention but don't escalate unless offline >10min. Produce a structured report per loki-monitor SKILL.md format. Save to /opt/data/cron/output/device-error-monitor/.",
-      "model": "gemma4:e4b",
-      "next_run": null,
+      "id": "b48bd7a707cf",
+      "name": "Device Error Monitor",
+      "prompt": "You are a homelab sysadmin assistant. Use the loki-monitor skill to query Loki at http://host.docker.internal:3100 for Tasmota device anomalies in the last 4 hours. Query 1: {container=\"mqtt-logger-deepthought\"} filtered for Offline. Query 2: {container=\"mqtt-logger-deepthought\"} filtered for error. Known noise: barfan and barfanlight have high MqttCount from WiFi instability \u2014 note but do not escalate unless offline >10min. Produce structured report per loki-monitor format. Save to /opt/data/cron/output/device-error-monitor/ named YYYY-MM-DDTHH-MM-SS.md.",
+      "skills": [
+        "loki-monitor"
+      ],
+      "skill": "loki-monitor",
+      "model": null,
+      "provider": null,
+      "base_url": null,
+      "script": null,
+      "schedule": {
+        "kind": "interval",
+        "minutes": 240,
+        "display": "every 240m"
+      },
+      "schedule_display": "every 240m",
+      "repeat": {
+        "times": null,
+        "completed": 0
+      },
       "enabled": true,
-      "delivery": {
-        "mode": "log"
-      }
+      "state": "scheduled",
+      "paused_at": null,
+      "paused_reason": null,
+      "created_at": "2026-04-15T00:23:47.418875+00:00",
+      "next_run_at": "2026-04-15T04:23:47.418892+00:00",
+      "last_run_at": null,
+      "last_status": null,
+      "last_error": null,
+      "last_delivery_error": null,
+      "deliver": "local",
+      "origin": null
     }
-  ]
+  ],
+  "updated_at": "2026-04-15T00:23:47.419137+00:00"
 }
