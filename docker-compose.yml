@@ -1,0 +1,41 @@
+services:
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    container_name: hermes
+    restart: unless-stopped
+
+    environment:
+      # Hermes home directory inside container
+      HERMES_HOME: /opt/data
+
+      # Remap to your Mac user UID so volume files are owned by you
+      HERMES_UID: "501"
+      HERMES_GID: "20"
+
+      # Keep Ollama model warm — avoids cold-load latency on every cron run
+      OLLAMA_KEEP_ALIVE: "24h"
+
+      # Suppress prompts for non-interactive mode
+      HERMES_NONINTERACTIVE: "1"
+
+    volumes:
+      # Persistent data dir: skills, memories, cron jobs, logs, config
+      - ./data:/opt/data
+
+    # Isolated bridge network — no access to loki_default or host network
+    # Hermes reaches Ollama and Loki via host.docker.internal
+    networks:
+      - hermes_net
+
+    # No privileged mode, no host credentials, no Docker socket
+    security_opt:
+      - no-new-privileges:true
+    read_only: false   # Hermes writes skills/memory; needs write access to /opt/data
+
+    # Keep container alive for CLI interaction and cron scheduler
+    # The gateway subcommand starts the cron scheduler + optional messaging gateways
+    command: ["gateway", "start"]
+
+networks:
+  hermes_net:
+    driver: bridge

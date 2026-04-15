@@ -1,0 +1,28 @@
+{
+  "jobs": [
+    {
+      "id": "container-error-monitor",
+      "name": "Container Error Monitor",
+      "schedule": "every 4h",
+      "prompt": "You are a homelab sysadmin assistant. Use the loki-monitor skill to query Loki at http://host.docker.internal:3100 for container errors in the last 4 hours. Query LogQL: {job=\"docker\"} |= \"error\" != \"loki\" != \"promtail\" != \"n8n\" with limit 200. Also check for FATAL and panic patterns. Analyze the results and produce a structured report following the loki-monitor SKILL.md output format. Save the report to /opt/data/cron/output/container-error-monitor/ with the current timestamp as filename. If no issues found, say 'All clear — no container errors in last 4h.'",
+      "model": "gemma4:e4b",
+      "next_run": null,
+      "enabled": true,
+      "delivery": {
+        "mode": "log"
+      }
+    },
+    {
+      "id": "device-error-monitor",
+      "name": "Device Error Monitor (Tasmota/MQTT)",
+      "schedule": "every 4h",
+      "prompt": "You are a homelab sysadmin assistant. Use the loki-monitor skill to query Loki at http://host.docker.internal:3100 for Tasmota device anomalies in the last 4 hours. Run these queries: 1) {container=\"mqtt-logger-deepthought\"} |= \"Offline\" for device drops, 2) {container=\"mqtt-logger-deepthought\"} |= \"error\" for MQTT errors. Known noise: barfan and barfanlight have elevated MqttCount due to WiFi instability — mention but don't escalate unless offline >10min. Produce a structured report per loki-monitor SKILL.md format. Save to /opt/data/cron/output/device-error-monitor/.",
+      "model": "gemma4:e4b",
+      "next_run": null,
+      "enabled": true,
+      "delivery": {
+        "mode": "log"
+      }
+    }
+  ]
+}

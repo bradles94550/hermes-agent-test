@@ -1,0 +1,70 @@
+# Hermes Agent Configuration
+# Mac Mini homelab — log monitoring experiment
+
+# =============================================================================
+# Model: local Ollama (gemma4:e4b already pulled)
+# =============================================================================
+model:
+  default: "gemma4:e4b"
+
+  # "ollama" is an alias for "custom" (OpenAI-compatible local endpoint)
+  provider: "ollama"
+  base_url: "http://host.docker.internal:11434/v1"
+
+  # Context window for gemma4 4-bit — conservative; auto-detect often works
+  context_length: 8192
+
+  # Don't blow the context budget on single responses
+  max_tokens: 2048
+
+# =============================================================================
+# Terminal: local execution INSIDE the container
+#
+# NOTE: env_type=docker would require Docker socket access to spin up sibling
+# containers — that breaks the "no host credentials" security posture.
+# Running "local" inside a Docker container IS the isolation layer.
+# =============================================================================
+terminal:
+  backend: "local"
+  cwd: "/opt/data/workspace"
+  timeout: 120
+  lifetime_seconds: 300
+
+# =============================================================================
+# Gateways
+# =============================================================================
+# Start with CLI only. REST API available for remote ad-hoc queries.
+# Telegram can be added later (needs bot token in .env).
+cli:
+  enabled: true
+
+# REST API gateway — listens on 0.0.0.0:8765 inside the container.
+# Expose via Tailscale by adding a port mapping when needed.
+# Currently NOT exposed in docker-compose (no ports: block) — CLI only.
+rest:
+  enabled: false
+  host: "0.0.0.0"
+  port: 8765
+
+# =============================================================================
+# Memory
+# =============================================================================
+memory:
+  # Hermes will persist memories here (inside /opt/data/memories/)
+  enabled: true
+
+# =============================================================================
+# Cron scheduler
+# =============================================================================
+cron:
+  enabled: true
+  # Jobs defined in /opt/data/cron/jobs.json
+  # Output written to /opt/data/cron/output/{job_id}/{timestamp}.md
+
+# =============================================================================
+# Skills
+# =============================================================================
+skills:
+  # Directory scanned for skill definitions
+  extra_dirs:
+    - "/opt/data/skills"

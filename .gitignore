@@ -1,0 +1,14 @@
+# Hermes runtime state — don't track these
+data/sessions/
+data/logs/
+data/cron/output/
+data/workspace/
+data/memories/   # privacy: contains agent reasoning about users/tasks
+comparison-results/
+
+# Do track these (the experiment artifacts)
+!data/skills/
+!data/cron/jobs.json
+!data/config.yaml
+# .env has no secrets (local Ollama, no API keys) but still exclude by convention
+data/.env
